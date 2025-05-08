@@ -1,0 +1,130 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+#root {
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 2rem;
+  text-align: center;
+}
+
+.logo {
+  height: 6em;
+  padding: 1.5em;
+  will-change: filter;
+  transition: filter 300ms;
+}
+
+.logo:hover {
+  filter: drop-shadow(0 0 2em #646cffaa);
+}
+
+.logo.react:hover {
+  filter: drop-shadow(0 0 2em #61dafbaa);
+}
+
+@keyframes logo-spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  a:nth-of-type(2) .logo {
+    animation: logo-spin infinite 20s linear;
+  }
+}
+
+.card {
+  padding: 2em;
+  border-radius: 10px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  transition: box-shadow 0.3s ease-in-out;
+}
+
+.card:hover {
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+}
+
+.read-the-docs {
+  color: #888;
+}
+
+/* Light mode styles */
+body.light-mode {
+  @apply bg-white text-black;
+  a {
+    @apply text-blue-500;
+  }
+  button {
+    @apply bg-blue-500 text-white;
+    @apply hover:bg-blue-600;
+  }
+  input, textarea {
+    @apply border border-gray-300;
+    @apply rounded-md p-2;
+    @apply focus:outline-none focus:ring-2 focus:ring-blue-500;
+  }
+  .card {
+    @apply bg-white;
+  }
+  .card:hover {
+    @apply bg-gray-100;
+  }
+}
+
+/* Dark mode styles */
+body.dark-mode {
+  @apply bg-gray-900 text-white;
+  a {
+    @apply text-blue-300;
+  }
+  button {
+    @apply bg-blue-600 text-white;
+    @apply hover:bg-blue-700;
+  }
+  input, textarea {
+    @apply border border-gray-700;
+    @apply rounded-md p-2;
+    @apply focus:outline-none focus:ring-2 focus:ring-blue-600;
+  }
+  .card {
+    @apply bg-gray-800;
+  }
+  .card:hover {
+    @apply bg-gray-700;
+  }
+}
+
+button.toggle-theme {
+  @apply px-4 py-2 rounded;
+  @apply hover:scale-105 transition-transform duration-300;
+}
+
+button, input, textarea, .card {
+  @apply transition-all duration-300 ease-in-out;
+}
+
+button:hover, input:focus, textarea:focus, .card:hover {
+  @apply scale-105;
+}
+
+/* Box shadows for depth */
+button, input, textarea, .card {
+  @apply shadow-md;
+  @apply hover:shadow-lg;
+}
+
+button {
+  @apply px-4 py-2 rounded;
+  @apply hover:scale-105 transition-transform duration-300;
+}
+
+/* Smooth scrolling */
+html {
+  scroll-behavior: smooth;
+}
