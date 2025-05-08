@@ -1,23 +1,53 @@
 import React from 'react';
-import type { Recipe } from '../pages/AllRecipes';
 
-interface RecipeDetailProps {
-  recipe: { title: string, ingredients: string[], instructions: string };
-  fetchRecipeById: (id: string) => Promise<Recipe | null>;
+interface Recipe {
+  id: string;
+  title: string;
+  image: string;
+  ingredients: string[];
+  instructions: string[];
 }
 
-const RecipeDetail: React.FC<RecipeDetailProps> = ({ recipe }) => {
+interface RecipeDetailModalProps {
+  recipe: Recipe;
+  onClose: () => void;
+}
+
+const RecipeDetail: React.FC<RecipeDetailModalProps> = ({ recipe, onClose }) => {
+  const [activeTab, setActiveTab] = React.useState<'ingredients' | 'instructions' | 'notes'>('ingredients');
+
   return (
-    <div className="max-w-md mx-auto p-4 bg-white dark:bg-gray-800 rounded shadow-md">
-      <h1 className="text-3xl font-bold mb-4">{recipe.title}</h1>
-      <h2 className="text-2xl font-bold mb-2">Ingredients</h2>
-      <ul className="list-disc pl-5 mb-4">
-        {recipe.ingredients.map((ingredient, index) => (
-          <li key={index} className="text-gray-600 dark:text-gray-300">{ingredient}</li>
-        ))}
-      </ul>
-      <h2 className="text-2xl font-bold mb-2">Instructions</h2>
-      <div dangerouslySetInnerHTML={{ __html: recipe.instructions }} className="prose max-w-none text-gray-600 dark:text-gray-300"></div>
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
+      <div className="bg-white rounded-lg shadow-lg max-w-4xl w-full p-6 relative">
+        <button
+          className="absolute top-3 right-3 text-xl text-gray-600 hover:text-black"
+          onClick={onClose}
+        >
+          &times;
+        </button>
+
+        <h2 className="text-2xl font-bold text-green-700 mb-4">{recipe.title}</h2>
+
+        <div className="mt-6">
+          <div className="bg-gray-50 p-4 rounded-b max-h-60 overflow-y-auto">
+            {activeTab === 'ingredients' &&
+              <div className="grid grid-cols-2 gap-x-8 list-disc list-inside">
+                {recipe.ingredients.map((item, i) => (
+                  <li key={i}>{item}</li>
+                ))}
+              </div>
+            }
+
+            {activeTab === 'instructions' &&
+              <ol className="list-decimal list-inside space-y-2">
+                {recipe.instructions.map((step, i) => (
+                  <li key={i}>{step}</li>
+                ))}
+              </ol>
+            }
+          </div>
+        </div>
+      </div>
     </div>
   );
 };

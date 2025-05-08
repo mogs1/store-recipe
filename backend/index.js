@@ -36,10 +36,7 @@ if (!mongoURI) {
   throw new Error('Missing MONGODB_URI environment variable');
 }
 
-mongoose.connect(mongoURI, {
-  useNewUrlParser: true,
-  useUnifiedTopology: true,
-})
+mongoose.connect(mongoURI)
 .then(() => console.log('MongoDB connected'))
 .catch(err => console.error('MongoDB connection error:', err));
 
@@ -54,6 +51,7 @@ app.get('/', (req, res) => {
 
 // User Registration
 app.post('/register', async (req, res) => {
+  res.send('User registration endpoint');
   const { username, email, password } = req.body;
   if (!username || !email || !password) {
     return res.status(400).send('All fields are required');
@@ -149,7 +147,78 @@ app.delete('/recipes/:id', async (req, res) => {
   }
 });
 
-// Start the server
-app.listen(port, () => {
+// Sample recipes
+const sampleRecipes = [
+  {
+    title: 'Spaghetti Carbonara',
+    ingredients: ['spaghetti', 'bacon', 'eggs', 'parmesan cheese'],
+    instructions: 'Cook spaghetti, fry bacon, mix eggs and cheese, combine all.',
+    author: 'John Doe',
+    createdAt: new Date()
+  },
+  {
+    title: 'Chicken Alfredo',
+    ingredients: ['chicken', 'fettuccine', 'alfredo sauce', 'garlic'],
+    instructions: 'Cook fettuccine, cook chicken, mix with alfredo sauce, serve.',
+    author: 'Jane Smith',
+    createdAt: new Date()
+  },
+  {
+    title: 'Vegetable Stir-Fry',
+    ingredients: ['broccoli', 'carrots', 'bell peppers', 'tofu', 'soy sauce'],
+    instructions: 'Stir-fry vegetables and tofu, add soy sauce, serve with rice.',
+    author: 'Alice Johnson',
+    createdAt: new Date()
+  },
+  {
+    title: 'Beef Bourguignon',
+    ingredients: ['beef', 'red wine', 'carrots', 'onions', 'mushrooms'],
+    instructions: 'Brown beef, sauté vegetables, add wine and simmer for hours.',
+    author: 'Bob Brown',
+    createdAt: new Date()
+  },
+  {
+    title: 'Greek Salad',
+    ingredients: ['cucumbers', 'tomatoes', 'feta cheese', 'olives', 'red onion'],
+    instructions: 'Chop vegetables, add feta and olives, drizzle with olive oil.',
+    author: 'Chris Green',
+    createdAt: new Date()
+  },
+  {
+    title: 'Tomato Soup',
+    ingredients: ['tomatoes', 'onions', 'garlic', 'chicken broth', 'cream'],
+    instructions: 'Blend tomatoes, onions, and garlic, simmer with broth, add cream.',
+    author: 'David White',
+    createdAt: new Date()
+  },
+  {
+    title: 'Pesto Pasta',
+    ingredients: ['pasta', 'pesto', 'parmesan cheese', 'pine nuts'],
+    instructions: 'Cook pasta, mix with pesto, add parmesan and pine nuts.',
+    author: 'Eva Black',
+    createdAt: new Date()
+  },
+  {
+    title: 'Lemon Garlic Shrimp',
+    ingredients: ['shrimp', 'lemon', 'garlic', 'butter', 'parsley'],
+    instructions: 'Cook shrimp with lemon, garlic, and butter, garnish with parsley.',
+    author: 'Frank Red',
+    createdAt: new Date()
+  }
+];
+
+// Seed the database with sample recipes
+const seedDatabase = async () => {
+  try {
+    await Recipe.insertMany(sampleRecipes);
+    console.log('Sample recipes added to the database');
+  } catch (error) {
+    console.error('Error seeding the database:', error);
+  }
+};
+
+// Start the server and seed the database
+app.listen(port, async () => {
   console.log(`Server running on port ${port}`);
+  await seedDatabase();
 });

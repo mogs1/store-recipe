@@ -1,119 +1,130 @@
-import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { toast } from 'react-toastify';
+import { useState } from 'react';
 import { submitRecipe } from '../utils/apiUtils';
+import { toast } from 'react-toastify';
 
 interface AddNewRecipeProps {
-  onAdd: (recipe: Recipe) => void;
+  onClose: () => void;
 }
 
-interface Recipe {
-  title: string;
-  ingredients: string[];
-  instructions: string;
-}
-
-const [loading, setLoading] = useState(false);
-
-const AddNewRecipe: React.FC<AddNewRecipeProps> = ({ onAdd }) => {
+const AddNewRecipe: React.FC<AddNewRecipeProps> = ({ onClose }) => {
   const [title, setTitle] = useState('');
-  const [ingredients, setIngredients] = useState(['']);
+  const [category, setCategory] = useState('');
+  const [prepTime, setPrepTime] = useState('30');
+  const [ingredients, setIngredients] = useState('');
   const [instructions, setInstructions] = useState('');
-  const navigate = useNavigate();
+  const [loading, setLoading] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+
     const newRecipe = {
       title,
-      ingredients,
+      category,
+      preparationTime: parseInt(prepTime),
+      ingredients: ingredients.split('\n').filter(Boolean),
       instructions,
     };
 
     try {
       setLoading(true);
-      await submitRecipe(newRecipe, setLoading);
-      onAdd(newRecipe);
+      await submitRecipe(newRecipe);
       toast.success('Recipe added successfully!');
-      navigate('/recipes');
-      setLoading(false);
+      onClose();
     } catch (error) {
       toast.error('Failed to add recipe.');
+    } finally {
+      setLoading(false);
     }
   };
 
-  const handleIngredientChange = (index: number, value: string) => {
-    const newIngredients = [...ingredients];
-    newIngredients[index] = value;
-    setIngredients(newIngredients);
-  };
-
-  const handleAddIngredient = () => {
-    setIngredients([...ingredients, '']);
-  };
-
-  const handleRemoveIngredient = (index: number) => {
-    const newIngredients = ingredients.filter((_, i) => i !== index);
-    setIngredients(newIngredients);
-  };
-
   return (
-    <div className="container">
-      <h1 className="text-2xl font-bold mb-4">Add New Recipe</h1>
-      <form onSubmit={handleSubmit}>
-        <div className="mb-4">
-          <label htmlFor="title" className="block text-gray-700 mb-2">Title</label>
-          <input
-            type="text"
-            id="title"
-            value={title}
-            onChange={(e) => setTitle(e.target.value)}
-            className="w-full p-2 border rounded"
-            required
-          />
+    <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
+      <div className="bg-white rounded-xl w-full max-w-lg shadow-lg">
+        <div className="bg-purple-600 text-white text-xl font-bold px-6 py-4 rounded-t-xl flex justify-between items-center">
+          <span>Add New Recipe</span>
+          <button onClick={onClose} className="text-white text-2xl leading-none">&times;</button>
         </div>
-        <div className="mb-4">
-          <label htmlFor="ingredients" className="block text-gray-700 mb-2">Ingredients</label>
-          {ingredients.map((ingredient, index) => (
-            <div key={index} className="flex items-center mb-2">
-              <input
-                type="text"
-                value={ingredient}
-                onChange={(e) => handleIngredientChange(index, e.target.value)}
-                className="w-full p-2 border rounded mr-2"
+        <form onSubmit={handleSubmit} className="p-6 space-y-4">
+          <div>
+            <label className="block font-semibold mb-1">Recipe Title</label>
+            <input
+              type="text"
+              placeholder="Enter recipe title..."
+              value={title}
+              onChange={(e) => setTitle(e.target.value)}
+              className="w-full p-2 border rounded"
+              required
+            />
+          </div>
+          <div className="flex gap-4">
+            <div className="w-1/2">
+              <label className="block font-semibold mb-1">Category</label>
+              <select
+                value={category}
+                onChange={(e) => setCategory(e.target.value)}
+                className="w-full p-2 border rounded"
                 required
-              />
-              <button
-                onClick={() => handleRemoveIngredient(index)}
-                className="bg-red-500 text-white py-2 px-4 rounded hover:bg-red-600"
               >
-                Remove
-              </button>
+                <option value="">Select category...</option>
+                <option value="Breakfast">Breakfast</option>
+                <option value="Lunch">Lunch</option>
+                <option value="Dinner">Dinner</option>
+              </select>
             </div>
-          ))}
-          <button
-            onClick={handleAddIngredient}
-            className="bg-blue-500 text-white py-2 px-4 rounded hover:bg-blue-600 mt-2"
-          >
-            Add Ingredient
-          </button>
-        </div>
-        <div className="mb-4">
-          <label htmlFor="instructions" className="block text-gray-700 mb-2">Instructions</label>
-          <textarea
-            id="instructions"
-            value={instructions}
-            onChange={(e) => setInstructions(e.target.value)}
-            className="w-full p-2 border rounded"
-            required
-          />
-        </div>
-        <button
-          type="submit"
-          className="bg-green-500 text-white py-2 px-4 rounded hover:bg-green-600"
-        >
-          Submit
-        </button>
-      </form>
+            <div className="w-1/2">
+              <label className="block font-semibold mb-1">Preparation Time</label>
+              <div className="flex">
+                <input
+                  type="number"
+                  value={prepTime}
+                  onChange={(e) => setPrepTime(e.target.value)}
+                  className="w-3/4 p-2 border rounded-l"
+                  required
+                />
+                <span className="w-1/4 flex items-center justify-center bg-gray-200 border border-l-0 rounded-r">
+                  minutes
+                </span>
+              </div>
+            </div>
+          </div>
+          <div>
+            <label className="block font-semibold mb-1">Ingredients</label>
+            <textarea
+              placeholder="Add ingredients, one per line..."
+              value={ingredients}
+              onChange={(e) => setIngredients(e.target.value)}
+              className="w-full p-2 border rounded h-24"
+              required
+            />
+          </div>
+          <div>
+            <label className="block font-semibold mb-1">Instructions</label>
+            <textarea
+              placeholder="Write cooking instructions..."
+              value={instructions}
+              onChange={(e) => setInstructions(e.target.value)}
+              className="w-full p-2 border rounded h-24"
+              required
+            />
+          </div>
+          <div className="flex justify-end gap-2 mt-4">
+            <button
+              type="button"
+              onClick={onClose}
+              className="bg-gray-200 px-4 py-2 rounded hover:bg-gray-300"
+            >
+              Cancel
+            </button>
+            <button
+              type="submit"
+              disabled={loading}
+              className="bg-purple-600 text-white px-6 py-2 rounded hover:bg-purple-700"
+            >
+              {loading ? 'Saving...' : 'Save'}
+            </button>
+          </div>
+        </form>
+      </div>
     </div>
   );
 };

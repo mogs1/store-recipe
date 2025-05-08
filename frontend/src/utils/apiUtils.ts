@@ -1,45 +1,46 @@
 import axios from 'axios';
 import { toast } from 'react-toastify';
-import type { Recipe } from '../pages/AllRecipes';
 
-const fetchRecipes = async (setLoading: (loading: boolean) => void): Promise<Recipe[]> => {
+const API_URL = 'http://localhost:5000';
+
+const signUpUser = async (userData: { username: string; email: string; password: string }) => {
   try {
-    setLoading(true);
-    const response = await axios.get<Recipe[]>('http://localhost:5000/recipes');
-    setLoading(false);
+    const response = await axios.post(`${API_URL}/signup`, userData);
+    return response.data;
+  } catch (error) {
+    toast.error('Sign up failed');
+    throw new Error('Sign up failed');
+  }
+};
+
+const fetchRecipes = async () => {
+  try {
+    const response = await axios.get(`${API_URL}/recipes`);
     return response.data;
   } catch (error) {
     console.error('Error fetching recipes:', error);
-    toast.error('Error fetching recipes');
-    setLoading(false);
-    return [];
+    throw error;
   }
 };
 
-const submitRecipe = async (recipe: { title: string, ingredients: string[], instructions: string, _id?: string, author?: string, createdAt?: string }, setLoading: (loading: boolean) => void): Promise<void> => {
+const submitRecipe = async (recipeData: { title: string; ingredients: string[]; instructions: string }) => {
   try {
-    setLoading(true);
-    await axios.post('http://localhost:5000/recipes', recipe);
-    toast.success('Recipe submitted successfully');
-    setLoading(false);
-  } catch (error) {
-    toast.error('Error submitting recipe');
-    setLoading(false);
-  }
-};
-
-const fetchRecipeById = async (id: string, setLoading: (loading: boolean) => void): Promise<Recipe | null> => {
-  try {
-    setLoading(true);
-    const response = await axios.get<Recipe>(`http://localhost:5000/recipes/${id}`);
-    setLoading(false);
+    const response = await axios.post(`${API_URL}/recipes`, recipeData);
     return response.data;
   } catch (error) {
-    console.error('Error fetching recipe:', error);
-    toast.error('Error fetching recipe');
-    setLoading(false);
-    return null;
+    toast.error('Failed to submit recipe');
+    throw new Error('Failed to submit recipe');
   }
 };
 
-export { fetchRecipes, submitRecipe, fetchRecipeById };
+const fetchRecipeById = async (id: string) => {
+  try {
+    const response = await axios.get(`${API_URL}/recipes/${id}`);
+    return response.data;
+  } catch (error) {
+    toast.error('Failed to fetch recipe by ID');
+    throw new Error('Failed to fetch recipe by ID');
+  }
+};
+
+export { signUpUser, fetchRecipes, submitRecipe, fetchRecipeById };
