@@ -18,12 +18,15 @@ const AddNewRecipe: React.FC<AddNewRecipeProps> = ({ onClose }) => {
     e.preventDefault();
 
     const newRecipe = {
-      title,
-      category,
-      preparationTime: parseInt(prepTime),
-      ingredients: ingredients.split('\n').filter(Boolean),
-      instructions,
-    };
+    title,
+    category,
+    preparationTime: parseInt(prepTime),
+    ingredients: ingredients.split('\n').filter(Boolean),
+    instructions,
+    author: 'Anonymous',
+    createdAt: new Date(), // optional, if not handled automatically by schema
+};
+
 
     try {
       setLoading(true);
@@ -39,7 +42,7 @@ const AddNewRecipe: React.FC<AddNewRecipeProps> = ({ onClose }) => {
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
-      <div className="bg-white rounded-xl w-full max-w-lg shadow-lg">
+      <div className="bg-gray-800 rounded-xl w-full max-w-lg shadow-lg">
         <div className="bg-purple-600 text-white text-xl font-bold px-6 py-4 rounded-t-xl flex justify-between items-center">
           <span>Add New Recipe</span>
           <button onClick={onClose} className="text-white text-2xl leading-none">&times;</button>
@@ -52,7 +55,7 @@ const AddNewRecipe: React.FC<AddNewRecipeProps> = ({ onClose }) => {
               placeholder="Enter recipe title..."
               value={title}
               onChange={(e) => setTitle(e.target.value)}
-              className="w-full p-2 border rounded"
+              className="w-full p-2 border rounded bg-slate-100 text-gray-800"
               required
             />
           </div>
@@ -62,7 +65,7 @@ const AddNewRecipe: React.FC<AddNewRecipeProps> = ({ onClose }) => {
               <select
                 value={category}
                 onChange={(e) => setCategory(e.target.value)}
-                className="w-full p-2 border rounded"
+                className="w-full p-2 border rounded bg-slate-100 text-gray-800"
                 required
               >
                 <option value="">Select category...</option>
@@ -78,10 +81,9 @@ const AddNewRecipe: React.FC<AddNewRecipeProps> = ({ onClose }) => {
                   type="number"
                   value={prepTime}
                   onChange={(e) => setPrepTime(e.target.value)}
-                  className="w-3/4 p-2 border rounded-l"
-                  required
+                  className="w-3/4 p-2 border rounded-l bg-slate-100 text-gray-800"
                 />
-                <span className="w-1/4 flex items-center justify-center bg-gray-200 border border-l-0 rounded-r">
+                <span className="w-1/4 flex items-center justify-center text-gray-800 bg-gray-300 border border-l-0 rounded-r">
                   minutes
                 </span>
               </div>
@@ -93,7 +95,7 @@ const AddNewRecipe: React.FC<AddNewRecipeProps> = ({ onClose }) => {
               placeholder="Add ingredients, one per line..."
               value={ingredients}
               onChange={(e) => setIngredients(e.target.value)}
-              className="w-full p-2 border rounded h-24"
+              className="w-full p-2 border rounded h-24 bg-slate-100 text-gray-800"
               required
             />
           </div>
@@ -103,7 +105,7 @@ const AddNewRecipe: React.FC<AddNewRecipeProps> = ({ onClose }) => {
               placeholder="Write cooking instructions..."
               value={instructions}
               onChange={(e) => setInstructions(e.target.value)}
-              className="w-full p-2 border rounded h-24"
+              className="w-full p-2 border rounded h-24 bg-slate-100 text-gray-800"
               required
             />
           </div>
@@ -111,7 +113,7 @@ const AddNewRecipe: React.FC<AddNewRecipeProps> = ({ onClose }) => {
             <button
               type="button"
               onClick={onClose}
-              className="bg-gray-200 px-4 py-2 rounded hover:bg-gray-300"
+              className="bg-gray-400 px-4 py-2 rounded hover:bg-gray-300"
             >
               Cancel
             </button>

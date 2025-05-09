@@ -89,7 +89,7 @@ app.post('/login', async (req, res) => {
 // Recipe CRUD Operations
 app.post('/recipes', async (req, res) => {
   const { title, ingredients, instructions, author } = req.body;
-  if (!title || !ingredients || !instructions || !author) {
+  if (!title || !ingredients || !instructions) {
     return res.status(400).send('All fields are required');
   }
   try {

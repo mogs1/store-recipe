@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from 'react';
-import { fetchRecipes } from '../utils/apiUtils';
+import {deleteRecipe, fetchRecipes } from '../utils/apiUtils';
 import AddNewRecipe from '../components/AddNewRecipe';
 import RecipeDetailModal from '../components/RecipeDetail';
+import { toast } from 'react-toastify';
 
 interface Recipe {
   _id: string;
@@ -47,6 +48,27 @@ const AllRecipes: React.FC = () => {
     setSelectedRecipe(recipe);
     setShowDetailModal(true);
   };
+
+  const fetchAllRecipes = async () => {
+  try {
+    const data = await fetchRecipes();
+    setRecipes(data);
+  } catch (error) {
+    toast.error('Failed to fetch recipes');
+  }
+};
+
+  const handleDelete = async (id: string) => {
+  if (!confirm('Are you sure you want to delete this recipe?')) return;
+  try {
+    await deleteRecipe(id);
+    toast.success('Recipe deleted!');
+    setRecipes((prev) => prev.filter((r) => r._id !== id));
+  } catch (error) {
+    console.error('Error deleting recipe:', error);
+  }
+};
+
  
   return (
     <div className=" bg- flex flex-col justify-center items-center max-w-6xl mx-auto p-4">
@@ -76,6 +98,16 @@ const AllRecipes: React.FC = () => {
                 </option>
               ))}
             </select>
+
+              {/* Add Recipe Button */}
+            <div className="text-center">
+              <button
+                onClick={() => setShowAddModal(true)}
+                className="bg-green-500 hover:bg-green-600 text-white font-semibold py-2 px-6 rounded"
+              >
+                Add New Recipe
+              </button>
+            </div>
           </div>
 
           {/* Recipe Grid */}
@@ -87,24 +119,23 @@ const AllRecipes: React.FC = () => {
               >
                 <h2 className="text-xl font-semibold text-indigo-600">{recipe.title}</h2>
                 <p className="text-sm text-gray-500">By {recipe.author}</p>
-                <button
-                  onClick={() => handleRecipeClick(recipe)}
-                  className="mt-3 w-full bg-indigo-500 text-white py-2 rounded hover:bg-indigo-600"
-                >
-                  View Recipe
-                </button>
+
+                <div className="flex space-x-3">
+                  <button
+                    onClick={() => handleRecipeClick(recipe)}
+                    className="mt-3 w-full bg-indigo-500 text-white py-2 rounded hover:bg-indigo-600"
+                  >
+                    View Recipe
+                  </button>
+                  <button
+                    onClick={() => handleDelete(recipe._id)}
+                    className="mt-3 w-full bg-red-500 text-white py-2 rounded hover:bg-red-600"
+                  >
+                    Delete
+                  </button>
+              </div>
               </div>
             ))}
-          </div>
-
-          {/* Add Recipe Button */}
-          <div className="text-center mt-6">
-            <button
-              onClick={() => setShowAddModal(true)}
-              className="bg-green-500 hover:bg-green-600 text-white font-semibold py-2 px-6 rounded"
-            >
-              Add New Recipe
-            </button>
           </div>
         </>
       )}
@@ -114,12 +145,17 @@ const AllRecipes: React.FC = () => {
         <RecipeDetailModal
           recipe={selectedRecipe}
           onClose={() => setShowDetailModal(false)}
+          
         />
       )}
 
       {/* Add Recipe Modal */}
       {showAddModal && (
-        <AddNewRecipe onClose={() => setShowAddModal(false)} />
+        <AddNewRecipe onClose={() => 
+          {setShowAddModal(false)
+          fetchAllRecipes()
+          }} 
+          />
       )}
     </div>
   );

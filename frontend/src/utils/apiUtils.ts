@@ -43,4 +43,14 @@ const fetchRecipeById = async (id: string) => {
   }
 };
 
-export { signUpUser, fetchRecipes, submitRecipe, fetchRecipeById };
+const deleteRecipe = async (id: string) => {
+  try {
+    const response = await axios.delete(`${API_URL}/recipes/${id}`);
+    return response.data;
+  } catch (error) {
+    toast.error('Failed to delete recipe');
+    throw new Error('Failed to delete recipe');
+  }
+};
+
+export { signUpUser, fetchRecipes, submitRecipe, fetchRecipeById, deleteRecipe };
